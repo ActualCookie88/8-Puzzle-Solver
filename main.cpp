@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <queue>
+#include <unordered_set>
 
 using namespace std;
 
@@ -10,6 +12,84 @@ vector<vector<int>> solution = {
     {4, 5, 6},
     {7, 8, 0}
 };
+
+// node structure
+struct Node {
+    vector<vector<int>> puzzle;
+    int gn;
+    int hn;
+
+    int fn() const { return gn + hn; }
+
+    bool operator<(const Node& other)  { // for min-heap behavior
+        return fn() > other.fn();  
+    }
+};
+
+/* ////////////////////////////////////////////////////////////////////
+
+SOLVER
+
+//////////////////////////////////////////////////////////////////// */
+
+void generalSearch(vector<vector<int>> puzzle_, int algorithm) {
+    // establish pqueue and visited set
+    priority_queue<Node> pq;
+    unordered_set<string> visited;
+
+    // initial state/node, establish gn and hn
+    Node init;
+    init.puzzle = puzzle_;
+    init.gn = 0;
+
+    if(algorithm == 1) {
+        init.hn = uniformHeuristic(puzzle_);
+    }
+    else if(algorithm == 2) {
+        init.hn = misplacedHeuristic(puzzle_);
+    } 
+    else if(algorithm == 3) {
+        init.hn = manhattanHeuristic(puzzle_);
+    }
+    else {
+        cout << "ERROR";
+        return;
+    }
+
+    pq.push(init);
+
+    // start loop
+    while(!pq.empty()) {
+        Node curr = pq.top();
+        pq.pop();
+
+        // convert puzzle to string for set hashing
+        string s;
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                s += to_string(curr.puzzle[i][j]);
+            }
+        }
+        
+        // if curr puzzle not visited yet: expand, otherwise skip
+        if(!visited.count(s)) {
+            visited.insert(s);
+
+            displayPuzzle(curr.puzzle);
+
+            // check if puzzle is solved
+            if(curr.puzzle == solution) {
+                cout << "PUZZLE SOLVED!" << endl <<
+                        "Depth: " << curr.gn << endl;
+                return;
+            }
+            
+            // otherwise, expand
+            
+
+        }
+    }
+}
 
 /* ////////////////////////////////////////////////////////////////////
 
@@ -38,13 +118,14 @@ int misplacedHeuristic(const vector<vector<int>>& puzzle) {
 
 // h(n) = sum of tile distances
 int manhattanHeuristic(const vector<vector<int>>& puzzle) {
-    unordered_map<int, pair<int,int>> solPositions = { // each individual positions
+    unordered_map<int, pair<int,int>> solPositions = { // each individual position
         {1,{0,0}}, {2,{0,1}}, {3,{0,2}},
         {4,{1,0}}, {5,{1,1}}, {6,{1,2}},
         {7,{2,0}}, {8,{2,1}}
     };
     int dist = 0;
 
+    // loop thru each position
     for(int i = 0; i < 3; i++) { 
         for(int j = 0; j < 3; j++) {
             int position = puzzle[i][j];
@@ -70,30 +151,29 @@ void displayPuzzle(const vector<vector<int>>& puzzle) {
             "[" << puzzle[2][0] << " " << puzzle[2][1] << " " << puzzle[2][2] << "]" << endl << endl;
 }
 
+// for terminal display purposes
 void border() {
     cout << endl;
     cout << "//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" << endl;
     cout << endl;
 }
 
+// user input checker
 int selectOptionHelper(int min, int max) {
     string input;
     int number;
     while(true) {
         cin >> input;
         cout << endl;
-
         if(input == "CANCEL") {
             return -1;
         }
-
         try {
             number = stoi(input); // if fails, throws exception to catch
         } catch(...) {
             cout << "INVALID OPTION. TRY AGAIN: ";
             continue;
         }
-
         if(number >= min && number <= max) {
             return number;
         } else {
@@ -198,18 +278,7 @@ int main() {
             "(3) Manhattan Distance Heuristic (A*)" << endl;
     choice = selectOptionHelper(1, 3);
 
-    if(choice == 1) { // Uniform Cost Search
-        
-    }
-    else if(choice == 2) { // Misplaced Tile Heuristic (A*)
-        
-    }
-    else if(choice == 3) { // Manhattan Distance Heuristic (A*)
-
-    }
-    else {
-        cout << "ERROR";
-    }
+    generalSearch(puzzle, choice);
 
     return 0;
 }
