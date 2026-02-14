@@ -18,8 +18,42 @@ unordered_map<int, pair<int,int>> solPositions = { // each individual position
     {7,{2,0}}, {8,{2,1}}
 };
 
-vector<vector<vector<int>>> depths = {{{1,2,3},{4,5,6},{7,8,0}},{{1,2,3},{4,5,6},{0,7,8}},{{1,2,3},{5,0,6},{4,7,8}},{{1,3,6},{5,0,2},{4,7,8}},
-                                    {{1,3,6},{5,0,7},{4,8,2}},{{1,6,7},{5,0,3},{4,8,2}},{{7,1,2},{4,8,5},{6,3,0}},{{0,7,2},{4,6,1},{3,5,8}}};
+vector<vector<vector<int>>> depths = {
+{   // depth 0
+    {1, 2, 3},
+    {4, 5, 6},
+    {7, 8, 0}
+}, { // depth 2
+    {1, 2, 3},
+    {4, 5, 6},
+    {0, 7, 8}
+}, { // depth 4
+    {1, 2, 3},
+    {5, 0, 6},
+    {4, 7, 8}
+}, { // depth 8
+    {1, 3, 6},
+    {5, 0, 2},
+    {4, 7, 8}
+}, { // depth 12
+    {1, 3, 6},
+    {5, 0, 7},
+    {4, 8, 2}
+}, { // depth 16
+    {1, 6, 7},
+    {5, 0, 3},
+    {4, 8, 2}
+}, { // depth 20
+    {7, 1, 2},
+    {4, 8, 5},
+    {6, 3, 0}
+}, { // depth 24
+    {0, 7, 2},
+    {4, 6, 1},
+    {3, 5, 8}
+},
+};
+
 
 // node structure for states
 struct Node {
@@ -295,6 +329,55 @@ void generalSearch(const vector<vector<int>>& puzzle_, int algorithm) {
 
 /* ////////////////////////////////////////////////////////////////////
 
+TEST BENCH FOR ME
+
+//////////////////////////////////////////////////////////////////// */
+
+void testbench() {
+    border();
+    cout << "WELCOME TO TEST BENCH" << endl << endl;
+
+    vector<vector<vector<int>>> depthMap = depths;
+    vector<int> depthVals = {0, 2, 4, 8, 12, 16, 20, 24};
+
+    while(true) {
+        cout << endl;
+        cout << "Testing depths..." << endl;
+        cout << "ENTER -1 TO CANCEL" << endl;
+        cout << "Select Depth (0, 2, 4, 8, 12, 16, 20, 24): ";
+        int choice = selectOptionHelper(-1, 24);
+        if(choice == -1) break;
+
+        // find index of selected depth
+        auto it = find(depthVals.begin(), depthVals.end(), choice);
+        if(it == depthVals.end()) {
+            cout << "Invalid depth selection." << endl;
+            continue;
+        }
+        int index = distance(depthVals.begin(), it);
+
+        if(choice <= 8) {
+            // for easy depths, run all algorithms
+            cout << "Depth " << choice << ":" << endl;
+            generalSearch(depthMap[index], 1);
+            generalSearch(depthMap[index], 2);
+            generalSearch(depthMap[index], 3);
+        }
+        else {
+            // for hard depths, let user select algorithm
+            cout << "SELECT ALGORITHM: " << endl
+                 << "(1) Uniform Cost Search" << endl
+                 << "(2) Misplaced Tile Heuristic (A*)" << endl
+                 << "(3) Manhattan Distance Heuristic (A*)";
+            int choice1 = selectOptionHelper(1, 3);
+            cout << "Depth " << choice << ":" << endl;
+            generalSearch(depthMap[index], choice1);
+        }
+    }
+}
+
+/* ////////////////////////////////////////////////////////////////////
+
 MAIN
 
 //////////////////////////////////////////////////////////////////// */
@@ -307,7 +390,7 @@ int main() {
     cout << "SELECT OPTION: " << endl <<
             "(1) Default Puzzle" << endl <<
             "(2) Custom Puzzle" << endl;
-    int choice = selectOptionHelper(1, 2);
+    int choice = selectOptionHelper(1, 3);
     vector<vector<int>> puzzle(3, vector<int>(3));
 
     if(choice == 1) { // default puzzle
@@ -324,6 +407,10 @@ int main() {
                 cin >> puzzle[i][j];
             }
         }
+    }
+    else if(choice == 3) { // for me
+        testbench(); 
+        return 0;
     }
     else {
         cout << "ERROR";
