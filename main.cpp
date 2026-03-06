@@ -59,13 +59,6 @@ HELPERS
 
 //////////////////////////////////////////////////////////////////// */
 
-// for terminal display purposes
-void border() {
-    cout << endl;
-    cout << "//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" << endl;
-    cout << endl;
-}
-
 // user input checker
 int selectOptionHelper(int min, int max) {
     string input;
@@ -132,6 +125,17 @@ double leaveOneOut(const vector<int>& featureSet) {
     return (double)numCorrectlyClassified / dataSet.size();
 }
 
+void printSet(const vector<int>& featureSet) {
+    cout << "{";
+    for(int i = 0; i < featureSet.size(); i++) {
+        cout << featureSet[i];
+        if(i != featureSet.size() - 1) {
+            cout << ",";
+        }
+    }
+    cout << "}";
+}
+
 /* ////////////////////////////////////////////////////////////////////
 
 ALGORITHMS
@@ -139,7 +143,53 @@ ALGORITHMS
 //////////////////////////////////////////////////////////////////// */
 
 void forwardSelection() {
+    vector<int> currFeatureSet;
+    vector<int> bestSet;
+    double bestAccuracy = 0.0;
     
+    // outer loop for walking down search tree
+    for(int level = 1; level <= numFeatures; level++) {
+        cout << "On the " << level << "th level of the search tree\n";
+        int featureToAdd = -1;
+        double bestAccuracySoFar = 0;
+
+        // inner loop for considering each feature
+        for(int k = 1; k <= numFeatures; k++) {
+            if(find(currFeatureSet.begin(), currFeatureSet.end(), k) != currFeatureSet.end()) continue; // skip if k already in set
+
+            // test feature temporarily
+            //cout << "   Considering adding the " << k << " feature\n";
+            vector<int> temp = currFeatureSet;
+            temp.push_back(k);
+
+            double accuracy = leaveOneOut(temp);
+
+            cout << "Using feature(s) ";
+            printSet(temp);
+            cout << " accuracy is " << accuracy * 100 << "%\n";
+
+            // update accuracy and best feature
+            if(accuracy > bestAccuracySoFar) {
+                bestAccuracySoFar = accuracy;
+                featureToAdd = k;
+            }
+        }
+        // adds best feature to set
+        currFeatureSet.push_back(featureToAdd);
+        
+        cout << "Feature set ";
+        printSet(currFeatureSet);
+        cout << " was best, accuracy is " << bestAccuracySoFar * 100 << "%\n\n";
+
+        // update best accuracy and set
+        if(bestAccuracySoFar > bestAccuracy) {
+            bestAccuracy = bestAccuracySoFar;
+            bestSet = currFeatureSet;
+        }
+    }
+    cout << "Finished search. Best feature subset is ";
+    printSet(bestSet);
+    cout << " with accuracy " << bestAccuracy * 100 << "%\n";
 }
 
 void backwardElimination() {
@@ -153,7 +203,6 @@ MAIN
 //////////////////////////////////////////////////////////////////// */
 
 int main() {\
-    border();
     cout << "Feature Selection Algorithm" << endl << endl;
 
     string fileName;
