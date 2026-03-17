@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <queue>
 #include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
@@ -18,8 +19,42 @@ unordered_map<int, pair<int,int>> solPositions = { // each individual position
     {7,{2,0}}, {8,{2,1}}
 };
 
-vector<vector<vector<int>>> depths = {{{1,2,3},{4,5,6},{7,8,0}},{{1,2,3},{4,5,6},{0,7,8}},{{1,2,3},{5,0,6},{4,7,8}},{{1,3,6},{5,0,2},{4,7,8}},
-                                    {{1,3,6},{5,0,7},{4,8,2}},{{1,6,7},{5,0,3},{4,8,2}},{{7,1,2},{4,8,5},{6,3,0}},{{0,7,2},{4,6,1},{3,5,8}}};
+vector<vector<vector<int>>> depths = {
+{   // depth 0
+    {1, 2, 3},
+    {4, 5, 6},
+    {7, 8, 0}
+}, { // depth 2
+    {1, 2, 3},
+    {4, 5, 6},
+    {0, 7, 8}
+}, { // depth 4
+    {1, 2, 3},
+    {5, 0, 6},
+    {4, 7, 8}
+}, { // depth 8
+    {1, 3, 6},
+    {5, 0, 2},
+    {4, 7, 8}
+}, { // depth 12
+    {1, 3, 6},
+    {5, 0, 7},
+    {4, 8, 2}
+}, { // depth 16
+    {1, 6, 7},
+    {5, 0, 3},
+    {4, 8, 2}
+}, { // depth 20
+    {7, 1, 2},
+    {4, 8, 5},
+    {6, 3, 0}
+}, { // depth 24
+    {0, 7, 2},
+    {4, 6, 1},
+    {3, 5, 8}
+},
+};
+
 
 // node structure for states
 struct Node {
@@ -87,23 +122,21 @@ HELPERS
 // prints puzzle 
 void displayPuzzle(const vector<vector<int>>& puzzle, int type) {
     if(type == 1) {
-        cout << "[" << puzzle[0][0] << " " << puzzle[0][1] << " " << puzzle[0][2] << "]" << endl <<
-            "[" << puzzle[1][0] << " " << puzzle[1][1] << " " << puzzle[1][2] << "]" << endl <<
-            "[" << puzzle[2][0] << " " << puzzle[2][1] << " " << puzzle[2][2] << "]" << endl << endl;
+        cout << "[" << puzzle[0][0] << " " << puzzle[0][1] << " " << puzzle[0][2] << "]\n" <<
+            "[" << puzzle[1][0] << " " << puzzle[1][1] << " " << puzzle[1][2] << "]\n" <<
+            "[" << puzzle[2][0] << " " << puzzle[2][1] << " " << puzzle[2][2] << "]\n\n";
     }
     else if(type == 2) {
-        cout << "   [" << puzzle[0][0] << " " << puzzle[0][1] << " " << puzzle[0][2] << "]" << endl <<
-            "   [" << puzzle[1][0] << " " << puzzle[1][1] << " " << puzzle[1][2] << "]" << endl <<
-            "   [" << puzzle[2][0] << " " << puzzle[2][1] << " " << puzzle[2][2] << "]" << endl << endl;
+        cout << "   [" << puzzle[0][0] << " " << puzzle[0][1] << " " << puzzle[0][2] << "]\n" <<
+            "   [" << puzzle[1][0] << " " << puzzle[1][1] << " " << puzzle[1][2] << "]\n" <<
+            "   [" << puzzle[2][0] << " " << puzzle[2][1] << " " << puzzle[2][2] << "]\n\n";
     }
     
 }
 
-// for terminal display purposes
+// terminal display purposes
 void border() {
-    cout << endl;
-    cout << "//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" << endl;
-    cout << endl;
+    cout << "\n//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////\n\n";
 }
 
 // user input checker
@@ -113,9 +146,6 @@ int selectOptionHelper(int min, int max) {
     while(true) {
         cin >> input;
         cout << endl;
-        if(input == "CANCEL") {
-            return -1;
-        }
         try {
             number = stoi(input); // if fails, throws exception to catch
         } catch(...) {
@@ -130,6 +160,27 @@ int selectOptionHelper(int min, int max) {
     }
 }
 
+vector<vector<int>> depthSelectHelper(int choice) {
+    vector<int> depthVals = {0,2,4,8,12,16,20,24};
+
+    auto it = find(depthVals.begin(), depthVals.end(), choice);
+    if(it == depthVals.end()){
+        cout << "Invalid depth.\n";
+        exit(1);
+    }
+
+    int index = distance(depthVals.begin(), it);
+    return depths[index];
+}
+
+string puzzleToString(const vector<vector<int>>& p){
+    string s;
+    for(int i=0;i<3;i++)
+        for(int j=0;j<3;j++)
+            s += to_string(p[i][j]);
+    return s;
+}
+
 // generate all possible states
 vector<vector<vector<int>>> expand(const vector<vector<int>>& puzzle) {
     vector<vector<vector<int>>> children; // list of 2D puzzles 
@@ -137,15 +188,15 @@ vector<vector<vector<int>>> expand(const vector<vector<int>>& puzzle) {
     int emptyCol = -1;
 
     // coordinates for empty space
-    bool found = false;
     for(int row = 0; row < 3; row++) { 
         for(int col = 0; col < 3; col++) {
             if(puzzle[row][col] == 0) {
                 emptyRow = row;
                 emptyCol = col;
-                found = true;
+                break;
             }
         }
+        if(emptyRow != -1) break;
     }
 
     // directions = {up, left, down, right}
@@ -210,34 +261,26 @@ void generalSearch(const vector<vector<int>>& puzzle_, int algorithm) {
 
     // start loop
     while(!pq.empty()) {
-        int pqsize = pq.size();
-        queueSize = max(queueSize, pqsize);
+        queueSize = max(queueSize, (int)pq.size());
 
         Node curr = pq.top();
         pq.pop();
 
-        cout << "Expanding best node: g(n)=" << curr.gn << 
-                "   h(n)=" << curr.hn << 
-                "   f(n)=" << curr.fn() << endl;
-        displayPuzzle(curr.puzzle, 1);
+        cout << "The best state to expand with g(n) = " << curr.gn << " and h(n) = " << curr.hn << " is:\n";
+        displayPuzzle(curr.puzzle, 2);
+        cout << "Expanding this node...\n\n";
 
         // convert 2D puzzle to string for hashing
-        string s;
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
-                s += to_string(curr.puzzle[i][j]);
-            }
-        }
+        string s = puzzleToString(curr.puzzle);
         
         // if current state not visited yet, expand
-        if(bestGn.count(s))
-            continue;
+        if(bestGn.find(s) != bestGn.end() && bestGn[s] <= curr.gn) continue;
 
         bestGn[s] = curr.gn;
 
         // check if puzzle is solved
         if(curr.puzzle == solution) {
-            cout << "PUZZLE SOLVED USING " << algs[algorithm-1] << "!" << endl <<
+            cout << "Goal state reached!\n\n" << 
                     "Solution Depth: " << curr.gn << endl <<
                     "Nodes Expanded: " << numExpanded << endl <<
                     "Max Queue size: " << queueSize << endl;
@@ -256,16 +299,11 @@ void generalSearch(const vector<vector<int>>& puzzle_, int algorithm) {
             int newGn = curr.gn + 1;
 
             // convert 2D puzzle to string for hashing
-            string st;
-            for(int j = 0; j < 3; j++) {
-                for(int k = 0; k < 3; k++) {
-                    st += to_string(childPuzzle[j][k]);
-                }
-            }
+            string st = puzzleToString(childPuzzle);
 
             // A*, keep best path
-            if(bestGn.count(st))
-                continue;
+            if(bestGn.count(st) && bestGn[st] <= newGn) continue;
+
             // child state/node, establish gn and hn
             Node child;
             child.puzzle = childPuzzle;
@@ -289,8 +327,7 @@ void generalSearch(const vector<vector<int>>& puzzle_, int algorithm) {
         //cout << "------------------------------------------" << endl;
     }
     // all states have been visited
-    cout << endl;
-    cout << "FAILED TO FIND SOLUTION!" << endl;
+    cout << "\nFAILED TO FIND SOLUTION!\n";
 }
 
 /* ////////////////////////////////////////////////////////////////////
@@ -301,44 +338,64 @@ MAIN
 
 int main() {
     border();
-    cout << "8-Puzzle Solver" << endl << endl;
+    cout << "8-Puzzle Solver\n\n";
     
     // initial user prompt
-    cout << "SELECT OPTION: " << endl <<
-            "(1) Default Puzzle" << endl <<
-            "(2) Custom Puzzle" << endl;
+    cout << "SELECT OPTION: \n" <<
+            "(1) Default Puzzle\n" <<
+            "(2) Custom Puzzle\n";
     int choice = selectOptionHelper(1, 2);
     vector<vector<int>> puzzle(3, vector<int>(3));
 
     if(choice == 1) { // default puzzle
-        puzzle = {
-            {1, 2, 3},
-            {4, 5, 6},
-            {7, 0, 8}
-        };
+        cout << "ENTER DEPTH OF PUZZLE (0,2,4,8,12,16,20,24): ";
+
+        puzzle = depthSelectHelper(selectOptionHelper(0, 24));
     }
     else if(choice == 2) { // custom puzzle
+        unordered_set<int> seen;
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
-                cout << "Enter tile Number (Row " << i + 1 << ", Column " << j + 1 << ")" << ": ";
-                cin >> puzzle[i][j];
+                int tile;
+                while(true) {
+                    cout << "Enter tile Number (Row " << i + 1 << ", Column " << j + 1 << ") [0-8, no duplicates]: ";
+                    cin >> tile;
+
+                    // check valid number
+                    if(tile < 0 || tile > 8) {
+                        cout << "INVALID: Must be between 0 and 8.\n";
+                        continue;
+                    }
+
+                    // check for duplicates
+                    if(seen.count(tile)) {
+                        cout << "INVALID: Tile already used.\n";
+                        continue;
+                    }
+
+                    // valid input
+                    puzzle[i][j] = tile;
+                    seen.insert(tile);
+                    break;
+                }
             }
         }
     }
     else {
         cout << "ERROR";
+        return 0;
     }
 
     border();
 
-    cout << "Selected puzzle: " << endl;
+    cout << "Selected puzzle: \n";
     displayPuzzle(puzzle, 1);
 
     // algorithm choice prompt
-    cout << "SELECT ALGORITHM: " << endl <<
-            "(1) Uniform Cost Search" << endl <<
-            "(2) Misplaced Tile Heuristic (A*)" << endl <<
-            "(3) Manhattan Distance Heuristic (A*)" << endl;
+    cout << "SELECT ALGORITHM: \n" <<
+            "(1) Uniform Cost Search\n" <<
+            "(2) Misplaced Tile Heuristic (A*)\n" <<
+            "(3) Manhattan Distance Heuristic (A*)\n";
     choice = selectOptionHelper(1, 3);
     
     border();
