@@ -1,4 +1,7 @@
-# 8-Puzzle Solver
+# 8-Puzzle Solver\
+
+Project completed as part of an algorithms course. 
+Focus: Implementing search algorithms for solving the 8-puzzle.
 
 This project implements an 8-puzzle solver in C++ using:
 
@@ -23,4 +26,5 @@ This project implements an 8-puzzle solver in C++ using:
 
 3. Follow prompts for default or custom puzzle, select algorithm.
 
-4. 
+## Report
+For detailed results and analysis, see 8-Puzzle-ProjectReport.pdf
