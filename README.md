@@ -15,6 +15,8 @@ This repository contains projects completed as part of an Intro to Artificial In
 
 Location: [8 Puzzle Solver](8_Puzzle_Solver/README.md)
 
+See project README for build and run instructions
+
 ### 2. Data Set Feature Selection
 - Implemented feature selection algorithms:
   - Forward Selection  
@@ -24,6 +26,8 @@ Location: [8 Puzzle Solver](8_Puzzle_Solver/README.md)
 
 Location: [Dataset Feature Selection](Dataset-Feature-Selection/README.md)
 
+See project README for build and run instructions
+
 ## Key Concepts
 - State-space search  
 - Heuristic design  
@@ -31,9 +35,13 @@ Location: [Dataset Feature Selection](Dataset-Feature-Selection/README.md)
 - Feature selection and evaluation  
 - Algorithm performance analysis  
 
+## How to Use
+Each project is self-contained. Navigate into a project folder and follow its README for setup and execution.
+
 ## Technologies Used
 - C++ (C++17)  
-- Standard Template Library (STL)  
+- STL  
+- CMake (for 8-puzzle project)  
 
 ## Purpose
 These projects demonstrate foundational AI concepts including problem formulation, search strategies, and data-driven model optimization.
