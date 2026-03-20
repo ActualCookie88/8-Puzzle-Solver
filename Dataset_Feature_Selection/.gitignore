@@ -1,0 +1,61 @@
+# ======================
+# C++ / Build Artifacts
+# ======================
+
+# Object files, static and dynamic libs
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+
+# Precompiled headers
+*.gch
+*.pch
+
+# Compiled source outputs
+*.slo
+*.lo
+*.lai
+*.la
+
+# Executables
+*.exe
+*.app
+
+# Debug files
+*.pdb
+*.dwo
+*.d
+
+# ======================
+# CMake / Build Folders
+# ======================
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+build/
+Debug/
+Release/
+*.dir/
+*.ninja
+
+# ======================
+# IDE / Editor files
+# ======================
+.vscode/
+.idea/
+*.user
+*.suo
+*.swp
+*.bak
+*.log
+
+# ======================
+# Other
+# ======================
+*.tmp
+*.temp
