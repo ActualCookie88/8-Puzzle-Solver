@@ -29,8 +29,13 @@ This project implements feature selection techniques in C++ to evaluate and iden
 - Trade-offs between feature subset size and performance
 
 ## Building the Project
+1. Clone the repo (if you haven't already)
 ```bash
-cd Dataset_Feature_Selection
+git clone https://github.com/ActualCookie88/IntroToAIProjects.git
+```
+2. Navigate to folder and build executable
+```bash
+cd Dataset_Feature_Selection/
 g++ -std=c++17 feature_selection.cpp -o feature_selection
 ```
 
@@ -52,3 +57,7 @@ The program displays:
 - Best feature subset found
 - Final classification accuracy
 - Program runtime
+
+## Report
+For detailed results and analysis, see project report:
+[View Project Report](Feature-Selection-ProjectReport.pdf)
