@@ -40,7 +40,7 @@ git clone https://github.com/ActualCookie88/IntroToAIProjects.git
 ```bash
 cd 8_Puzzle_Solver/
 mkdir build
-cd build
+cd build/
 ```
 3. Configure CMake to use Ninja
 ```bash
@@ -66,6 +66,7 @@ This program displays:
 - Total number of moves (solution cost)  
 - Number of nodes expanded during the search  
 - Maximum queue size reached
+- Program runtime
 
 ## Report
 For detailed results and analysis, see project report:
