@@ -25,7 +25,6 @@ int selectOptionHelper(int min, int max) {
     int number;
     while(true) {
         cin >> input;
-        cout << endl;
         try {
             number = stoi(input); // if fails, throws exception to catch
         } catch(...) {
@@ -44,14 +43,16 @@ int selectOptionHelper(int min, int max) {
 vector<vector<int>> depthSelectHelper(int choice) {
     vector<int> depthVals = {0,2,4,6,8,10,12,14,16,18,20,22,24};
 
-    auto it = find(depthVals.begin(), depthVals.end(), choice);
-    if(it == depthVals.end()){
-        cout << "Invalid depth.\n";
-        exit(1);
+    while(true) {
+        auto it = find(depthVals.begin(), depthVals.end(), choice);
+        if(it != depthVals.end()){
+            int index = distance(depthVals.begin(), it);
+            return depths[index];
+        } else {
+            cout << "INVALID DEPTH. Enter an even number between 0 and 24: ";
+            choice = selectOptionHelper(0, 24); // reuse input checker
+        }
     }
-
-    int index = distance(depthVals.begin(), it);
-    return depths[index];
 }
 
 // handles custom puzzle input
@@ -124,7 +125,7 @@ int main() {
     vector<vector<int>> puzzle(3, vector<int>(3));
 
     if(choice == 1) { // default puzzle
-        cout << "ENTER DEPTH OF PUZZLE (0-24, even numbers only): ";
+        cout << "\nENTER DEPTH OF PUZZLE (0-24, even numbers only): ";
         puzzle = depthSelectHelper(selectOptionHelper(0, 24));
     }
     else if(choice == 2) { // custom puzzle

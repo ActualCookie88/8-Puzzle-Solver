@@ -10,6 +10,26 @@
 
 using namespace::std;
 
+// input validation helper
+char getYesNo(const std::string &prompt) {
+    char input;
+    while (true) {
+        std::cout << prompt;
+        std::cin >> input;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        // normalize input to lowercase
+        input = std::tolower(input);
+
+        if (input == 'y' || input == 'n') {
+            return input;
+        } else {
+            std::cout << "INVALID INPUT. Enter 'y' or 'n'.\n";
+        }
+    }
+}
+
+// main search algorithm
 SearchResult runSearch(const vector<vector<int>>& puzzle_, int algorithm, bool printSteps, bool printSolution) {
     vector<string> algs = {
         "UNIFORM COST SEARCH",
@@ -144,12 +164,8 @@ void generalSearch(const vector<vector<int>>& puzzle_, int algorithm, bool runAl
 
     // run one algorithm and print results
     char choice, choice2;
-    cout << "Print intermediate steps? (y/n): ";
-    cin >> choice;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cout << "Print solution path? (y/n): ";
-    cin >> choice2;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    choice = getYesNo("Print intermediate steps? (y/n): ");
+    choice2 = getYesNo("Print solution path? (y/n): ");
 
     bool printSteps = (choice == 'y');
     bool printSolution = (choice2 == 'y');
