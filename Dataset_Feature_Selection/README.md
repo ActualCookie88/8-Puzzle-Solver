@@ -28,6 +28,11 @@ This project implements feature selection techniques in C++ to evaluate and iden
 - Model evaluation using classification accuracy  
 - Trade-offs between feature subset size and performance
 
+## Dataset: UCI Wine
+- Ran Forward Selection and Backward Elimination a real public dataset
+- Results can be found in the project report, link below
+- Link to dataset: https://archive.ics.uci.edu/dataset/109/wine
+
 ## Building the Project
 1. Clone the repo (if you haven't already)
 ```bash
