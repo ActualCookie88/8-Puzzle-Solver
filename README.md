@@ -2,7 +2,8 @@
 
 By Luke Matsunaga
 
-Project completed as part of an algorithms course. 
+Project completed as part of an Intro to Artificial Intelligence course. 
+
 Focus: Implementing search algorithms for solving the 8-puzzle.
 
 This project implements an 8-puzzle solver in C++ using classical AI search techniques:
@@ -36,7 +37,7 @@ Below is a link to an interactive visual demo of the 8-puzzle.
 [Link here](https://ActualCookie88.github.io/8-Puzzle-Solver/docs/visualizer.html)
 
 ## Building the Project
-1. Clone the repo (if you haven't already)
+1. Clone the repo
 ```bash
 git clone https://github.com/ActualCookie88/8-Puzzle-Solver.git
 ```
@@ -61,6 +62,12 @@ ninja
 ./8puzzle        # On Linux/macOS
 8puzzle.exe      # On Windows
 ```
+
+You will be prompted to:
+
+Choose the puzzle type and depth or provide your own (via input)
+Choose the algorithm (UCS, Misplaced Tile, Manhattan Distance)
+Choose to visualize intermediate steps or solution path
 
 ## Output
 This program displays:
